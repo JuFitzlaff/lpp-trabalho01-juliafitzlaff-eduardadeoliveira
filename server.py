@@ -82,3 +82,27 @@ async def connect(sid, environ, auth):
 async def disconnect(sid):
     # quem sai deixa de ser participante; a floricultura não muda
     jogadores.pop(sid, None)
+
+
+async def recusar(sid, motivo, causa):
+    """Recusa um pedido. Vai SÓ para quem pediu: os outros não têm nada a mudar."""
+    await sio.emit("operacao.recusada", {"motivo": motivo, "causa": causa}, to=sid)
+
+
+def papel_de(sid):
+    return jogadores.get(sid, {}).get("papel")
+
+
+@sio.on("vila.abertura_solicitada")
+async def abrir_vila(sid, dados=None):
+    # escuta o PEDIDO do Mestre; quem decide se a temporada abre é o servidor
+    pedido = "vila.abertura_solicitada"
+    if papel_de(sid) != "mestre":
+        await recusar(sid, "Só o Mestre pode abrir a temporada", pedido)
+        return
+    if estado["fase"] != "aguardando":
+        await recusar(sid, "A temporada já foi aberta", pedido)
+        return
+    estado["fase"] = "aberta"
+    # servidor -> TODOS: o fato muda a fase para todos os jogadores ao mesmo tempo
+    await sio.emit("vila.iniciada", fato(pedido))
