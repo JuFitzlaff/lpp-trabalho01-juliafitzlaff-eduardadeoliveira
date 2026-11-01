@@ -70,9 +70,9 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M2B | Botão do Mestre e reação a `vila.iniciada` | Eduarda | M2A, M1B | concluída | `7db04e9` |
 | M3A | Construção das três construções no servidor | Julia | M2A | concluída | `3ee2dc9` |
 | M3B | Botões de construção e canteiro na vila | Eduarda | M3A, M2B | concluída | `f3c4019` |
-| M4A | Validações e `operacao.recusada` | Julia | M3A | concluída | (registrado no próximo commit) |
+| M4A | Validações e `operacao.recusada` | Julia | M3A | concluída | `854d3a9` |
 | M4B | Reação à recusa (aviso e tremor) | Eduarda | M4A, M3B | concluída | (registrado no próximo commit) |
-| M5A | Colheita automática por temporizador | Julia | M4A | pendente | — |
+| M5A | Colheita automática por temporizador | Julia | M4A | concluída | (registrado no próximo commit) |
 | M5B | Reação à colheita | Eduarda | M5A, M4B | pendente | — |
 | M6A | Conclusão das obras por temporizador | Julia | M5A | pendente | — |
 | M6B | Construção pronta na vila | Eduarda | M6A, M5B | pendente | — |

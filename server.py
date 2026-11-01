@@ -57,6 +57,7 @@ estado = {
 # Flores guardadas por lote (cada colheita vira um lote com prazo próprio).
 # O total de flores fica em estado["flores"]; os lotes ficam só no servidor.
 lotes = [{"id": 1, "qtd": 100}]     # lote inicial: o prazo começa na abertura
+proximo_lote = 2
 
 jogadores = {}                      # sid -> {"nome": ..., "papel": ...}
 
@@ -104,8 +105,31 @@ async def abrir_vila(sid, dados=None):
         await recusar(sid, "A temporada já foi aberta", pedido)
         return
     estado["fase"] = "aberta"
+    sio.start_background_task(colheita)     # a abertura liga o temporizador da colheita
     # servidor -> TODOS: o fato muda a fase para todos os jogadores ao mesmo tempo
     await sio.emit("vila.iniciada", fato(pedido))
+
+
+def novo_lote(qtd):
+    """Guarda uma colheita como lote novo e soma as flores ao estoque."""
+    global proximo_lote
+    lote = {"id": proximo_lote, "qtd": qtd}
+    proximo_lote += 1
+    lotes.append(lote)
+    estado["flores"] += qtd
+    return lote
+
+
+async def colheita():
+    """Temporizador da colheita: enquanto a temporada estiver aberta, colhe a cada INTERVALO_COLHEITA."""
+    while estado["fase"] == "aberta":
+        await sio.sleep(INTERVALO_COLHEITA)     # sio.sleep não trava o servidor (time.sleep travaria)
+        if estado["fase"] != "aberta":
+            break
+        qtd = estado["producao"]                # 10 flores por Estufa pronta
+        novo_lote(qtd)
+        # servidor -> TODOS, sem ninguém pedir: a causa do fato é o temporizador
+        await sio.emit("recurso.produzido", fato("temporizador da colheita", qtd=qtd))
 
 
 def gastar_flores(qtd):
