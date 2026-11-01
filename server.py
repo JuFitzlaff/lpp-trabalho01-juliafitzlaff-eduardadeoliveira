@@ -124,6 +124,26 @@ async def construir(sid, dados=None):
     # escuta o PEDIDO de um Jogador para construir uma Estufa, um Ateliê ou uma Loja
     pedido = "construcao.solicitada"
     tipo = dados.get("tipo") if isinstance(dados, dict) else None
+    # Valide TUDO antes de alterar o estado e sem await no meio:
+    # assim, dois pedidos simultâneos são decididos um de cada vez.
+    if estado["fase"] != "aberta":
+        motivo = "A temporada não está aberta"
+    elif papel_de(sid) != "jogador":
+        motivo = "Só jogadores podem construir"
+    elif not isinstance(tipo, str) or tipo not in CUSTOS:
+        motivo = "Tipo de construção inválido"
+    elif estado["flores"] < CUSTOS[tipo]["flores"]:
+        motivo = "Flores insuficientes"
+    elif estado["buques"] < CUSTOS[tipo]["buques"]:
+        motivo = "Buquês insuficientes"
+    elif estado["floristas"] >= estado["limite"]:
+        motivo = "Nenhum florista livre"
+    else:
+        motivo = None
+    if motivo:
+        await recusar(sid, motivo, pedido)      # só quem pediu recebe; nada muda
+        return
+
     custo = CUSTOS[tipo]
     gastar_flores(custo["flores"])
     estado["buques"] -= custo["buques"]
