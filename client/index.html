@@ -363,7 +363,13 @@
           jogo.obraIniciada(d.estado, d.tipo);
         });
 
-        // ETAPA 4: ouvir "operacao.recusada"     -> jogo.recusado(...)
+        // operacao.recusada (servidor -> SÓ este cliente, causa: o pedido que ele fez).
+        // Por quê: só quem pediu precisa saber; a floricultura não mudou, então nada é atualizado.
+        ouvir("operacao.recusada", "avisa o motivo e a vila treme", (d) => {
+          avisar(d.motivo, "erro");
+          jogo.recusado(d.motivo);
+        });
+
         // ETAPA 5: ouvir "recurso.produzido"     -> jogo.recursoProduzido(...)
         //          e "construcao.concluida"      -> jogo.obraConcluida(...)
         // ETAPA 6: ouvir "vila.encerrada"        -> jogo.vilaEncerrada()
