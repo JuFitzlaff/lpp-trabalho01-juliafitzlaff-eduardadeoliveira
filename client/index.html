@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vila em Tempo Real</title>
+  <title>Floricultura em Tempo Real</title>
   <style>
     body { font-family: system-ui, sans-serif; max-width: 580px; margin: 24px auto; padding: 0 12px; }
     .cartao, .painel { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin: 12px 0; }
@@ -43,7 +43,7 @@
 
   <!-- Tela de entrada -->
   <section v-if="!conectado" class="cartao">
-    <h1>🏘️ Vila em Tempo Real</h1>
+    <h1>🌷 Floricultura em Tempo Real</h1>
     <input v-model="nome" placeholder="Seu nome">
     <button @click="entrar('mestre')">Entrar como Mestre</button>
     <button @click="entrar('jogador')">Entrar como Jogador</button>
@@ -51,17 +51,19 @@
 
   <!-- Tela da vila -->
   <main v-else>
-    <h1>🏘️ Vila</h1>
+    <h1>🌷 Floricultura</h1>
     <p>{{ papel }}: <strong>{{ nome || "Anônimo" }}</strong> · Temporada: <strong>{{ estado.fase }}</strong></p>
 
     <!-- A vila desenhada pelo Phaser aparece aqui -->
     <div id="jogo"></div>
 
     <section class="painel">
-      <p>🪵 Toras: <strong>{{ estado.toras }}</strong> (+{{ porMinuto }}/min)</p>
-      <p>👷 Trabalhadores: {{ estado.trabalhadores }}/{{ estado.limite }}
-        <progress :value="estado.trabalhadores" :max="estado.limite"></progress></p>
-      <p>🏠 Construções: {{ estado.concluidas }} concluídas, {{ estado.em_obra }} em obra</p>
+      <p>🌷 Flores: <strong>{{ estado.flores }}</strong> (+{{ porMinuto }}/min · murcham {{ estado.validade }} s após a colheita)</p>
+      <p>💐 Buquês: <strong>{{ estado.buques }}</strong> · 🧾 Vendidos: <strong>{{ estado.vendidos }}</strong></p>
+      <p>🧑‍🌾 Floristas: {{ estado.floristas }}/{{ estado.limite }}
+        <progress :value="estado.floristas" :max="estado.limite"></progress></p>
+      <p v-for="(c, tipo) in estado.construcoes">{{ TIPOS[tipo].icone }} {{ TIPOS[tipo].nome }}:
+        {{ c.prontas }} pronta(s), {{ c.em_obra }} em obra</p>
     </section>
 
     <section>
@@ -69,7 +71,7 @@
         <button @click="abrirVila">Abrir temporada</button>
         <button @click="encerrarVila">Encerrar temporada</button>
       </template>
-      <button v-else @click="construir">🔨 Construir (custo {{ estado.custo }} toras)</button>
+      <button v-else @click="construir">🔨 Construir</button>
     </section>
 
     <ul class="avisos">
@@ -98,7 +100,7 @@
     </section>
   </main>
 
-  <footer>Desenvolvido por: [Nome do(a) Aluno(a)]</footer>
+  <footer>Desenvolvido por: Julia Fitzlaff e Eduarda de Oliveira</footer>
 </div>
 
 <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
@@ -112,6 +114,14 @@
   //  Cada método abaixo reage a UM evento do servidor.
   //  Seu trabalho é chamar o método certo dentro de cada socket.on(...).
   // =====================================================================
+
+  // Nome e ícone de cada construção da Floricultura (usados na vila e no painel).
+  const TIPOS = {
+    estufa: { nome: "Estufa", icone: "🌱" },
+    atelie: { nome: "Ateliê", icone: "✂️" },
+    loja:   { nome: "Loja",   icone: "🏪" },
+  };
+
   function criarJogo() {
     let cena = null;          // a cena, quando já estiver pronta
     let partida = null;       // o jogo Phaser
@@ -159,9 +169,13 @@
 
       // ----- apoio -----
       lote(i) { return this.lotes[i % this.lotes.length]; }
-      criarCasa(x, y) {
+      criarCasa(x, y, tipo) {
         const casa = this.add.sprite(x, y, "sprites", 0);
         this.tweens.add({ targets: casa, scale: { from: 0.3, to: 1 }, duration: 400, ease: "Back.Out" });
+        if (TIPOS[tipo]) {                    // ícone do tipo acima da construção pronta
+          this.add.text(x, y - 18, TIPOS[tipo].icone, { fontSize: "10px", resolution: 2 })
+            .setOrigin(0.5).setDepth(6);
+        }
       }
       criarObra(duracao) {
         const { x, y } = this.lote(this.usados++);
@@ -182,11 +196,16 @@
 
       // ----- um método para cada evento do servidor -----
       mostrarEstado(estado) {                 // estado.sincronizado
-        for (let i = 0; i < estado.concluidas; i++) {
-          const p = this.lote(this.usados++);
-          this.criarCasa(p.x, p.y);
+        const construcoes = Object.entries(estado.construcoes);
+        for (const [tipo, c] of construcoes) {          // construções prontas, com o ícone do tipo
+          for (let i = 0; i < c.prontas; i++) {
+            const p = this.lote(this.usados++);
+            this.criarCasa(p.x, p.y, tipo);
+          }
         }
-        for (let i = 0; i < estado.em_obra; i++) this.criarObra(estado.tempo_obra * 1000);
+        for (const [, c] of construcoes) {              // obras em andamento
+          for (let i = 0; i < c.em_obra; i++) this.criarObra(estado.tempo_obra * 1000);
+        }
         if (estado.fase === "aberta") this.vilaIniciada();
         if (estado.fase === "encerrada") this.vilaEncerrada();
       }
@@ -247,9 +266,11 @@
       const nome = ref("");
       const papel = ref("");
       const conectado = ref(false);
+      // Cópia local do retrato da floricultura: só muda quando chega um fato do servidor.
       const estado = reactive({
-        fase: "aguardando", toras: 0, trabalhadores: 0, limite: 0,
-        producao: 0, intervalo: 0, tempo_obra: 0, custo: 0, concluidas: 0, em_obra: 0,
+        fase: "aguardando", flores: 0, buques: 0, vendidos: 0, floristas: 0, limite: 0,
+        construcoes: {}, montagens: 0, producao: 0, intervalo: 0, validade: 0,
+        tempo_obra: 0, custos: {}, flores_por_buque: 0, tempo_montagem: 0, intervalo_vendas: 0,
       });
       const avisos = ref([]);
       const eventos = ref([]);              // linha do tempo do painel de eventos
@@ -277,7 +298,7 @@
         if (!d) return "";
         const { estado: e, causa, ...resto } = d;
         const partes = Object.entries(resto).map(([k, v]) => k + ": " + v);
-        if (e) partes.push("toras " + e.toras + ", trabalhadores " + e.trabalhadores + "/" + e.limite);
+        if (e) partes.push("flores " + e.flores + ", buquês " + e.buques + ", floristas " + e.floristas + "/" + e.limite);
         return partes.join(" · ");
       }
       function registrar(sentido, nome, dados, reacao = "") {
@@ -308,7 +329,14 @@
 
         // ===== ESCUTAS (on): o cliente reage aos FATOS do servidor =====
         // ouvir(evento, "o que o cliente faz ao receber", função)
-        // ETAPA 1: ouvir "estado.sincronizado"   -> jogo.mostrarEstado(...)
+
+        // estado.sincronizado (servidor -> só este cliente, ao entrar).
+        // Por quê: a tela não inventa números; começa exatamente igual ao retrato do servidor.
+        ouvir("estado.sincronizado", "guarda o retrato e desenha a floricultura", (d) => {
+          atualizar(d);
+          jogo.mostrarEstado(d.estado);
+        });
+
         // ETAPA 2: ouvir "vila.iniciada"         -> jogo.vilaIniciada()
         // ETAPA 3: ouvir "construcao.iniciada"   -> jogo.obraIniciada(...)
         // ETAPA 4: ouvir "operacao.recusada"     -> jogo.recusado(...)
@@ -329,7 +357,7 @@
         // ETAPA 6: pedir "vila.encerramento_solicitado"
       }
 
-      return { nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, porMinuto,
+      return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, porMinuto,
                entrar, abrirVila, construir, encerrarVila };
     }
   }).mount("#app");
