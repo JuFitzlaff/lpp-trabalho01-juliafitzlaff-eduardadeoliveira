@@ -160,6 +160,7 @@
         this.alt = mapa.heightInPixels;
 
         this.obras = [];      // obras em andamento (a primeira a começar é a primeira a terminar)
+        this.estufas = [];    // posições das Estufas prontas
         this.usados = 0;      // quantos lotes já foram usados
         this.faixa = this.add.text(this.larg / 2, 9, "⏳ Aguardando o Mestre", {
           fontSize: "8px", color: "#ffffff", backgroundColor: "#00000099",
@@ -179,6 +180,7 @@
           this.add.text(x, y - 18, TIPOS[tipo].icone, { fontSize: "10px", resolution: 2 })
             .setOrigin(0.5).setDepth(6);
         }
+        if (tipo === "estufa") this.estufas.push({ x, y });   // de onde sobem as flores colhidas
       }
       criarObra(duracao, tipo) {
         const { x, y } = this.lote(this.usados++);
@@ -232,8 +234,9 @@
         this.criarCasa(obra.x, obra.y);
         this.flutuar("🏠 Obra concluída!", obra.x, obra.y - 18, "#1b5e20");
       }
-      recursoProduzido(estado) {              // recurso.produzido
-        this.flutuar("+" + estado.producao + " 🪵", this.acampamento.x, this.acampamento.y, "#1b5e20");
+      recursoProduzido(qtd) {                 // recurso.produzido
+        const origem = this.estufas[0] || this.acampamento;
+        this.flutuar("+" + qtd + " 🌷", origem.x + 18, origem.y, "#1b5e20");
       }
       recusado(motivo) {                      // operacao.recusada (só quem pediu)
         this.cameras.main.shake(180, 0.006);
@@ -370,8 +373,14 @@
           jogo.recusado(d.motivo);
         });
 
-        // ETAPA 5: ouvir "recurso.produzido"     -> jogo.recursoProduzido(...)
-        //          e "construcao.concluida"      -> jogo.obraConcluida(...)
+        // recurso.produzido (servidor -> todos, causa: temporizador da colheita).
+        // Por quê: ninguém clicou; o servidor avisa a cada colheita e a tela só acompanha.
+        ouvir("recurso.produzido", "soma as flores colhidas e mostra o +N", (d) => {
+          atualizar(d);
+          jogo.recursoProduzido(d.qtd);
+        });
+
+        // ETAPA 5: ouvir "construcao.concluida"  -> jogo.obraConcluida(...)
         // ETAPA 6: ouvir "vila.encerrada"        -> jogo.vilaEncerrada()
       }
 
