@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
+.vscode/
+
+# materiais de apoio locais (não fazem parte da entrega)
+docs/implementacao/
