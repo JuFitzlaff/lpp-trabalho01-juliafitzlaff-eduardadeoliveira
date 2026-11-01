@@ -63,7 +63,7 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | ID | Milestone | Responsável | Depende de | Status | Commit |
 |---|---|---|---|---|---|
 | M0A | Especificação e divisão da equipe | Julia | — | concluída | (registrado no próximo commit) |
-| M0B | Kit inicial do professor (sem alterações) | Eduarda | M0A | pendente | — |
+| M0B | Kit inicial do professor (sem alterações) | Eduarda | M0A | concluída | (registrado no próximo commit) |
 | M1A | Estado inicial e `estado.sincronizado` no servidor | Julia | M0B | pendente | — |
 | M1B | Tela da floricultura sincronizada + rodapé | Eduarda | M1A | pendente | — |
 | M2A | Abertura da temporada no servidor | Julia | M1A | pendente | — |
