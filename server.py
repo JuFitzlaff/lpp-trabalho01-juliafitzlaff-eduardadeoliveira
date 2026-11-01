@@ -106,3 +106,29 @@ async def abrir_vila(sid, dados=None):
     estado["fase"] = "aberta"
     # servidor -> TODOS: o fato muda a fase para todos os jogadores ao mesmo tempo
     await sio.emit("vila.iniciada", fato(pedido))
+
+
+def gastar_flores(qtd):
+    """Tira `qtd` flores do estoque, das mais antigas (mais perto de murchar) para as mais novas."""
+    estado["flores"] -= qtd
+    while qtd > 0 and lotes:
+        usado = min(qtd, lotes[0]["qtd"])
+        lotes[0]["qtd"] -= usado
+        qtd -= usado
+        if lotes[0]["qtd"] == 0:
+            lotes.pop(0)            # lote usado por inteiro: some sem murchar
+
+
+@sio.on("construcao.solicitada")
+async def construir(sid, dados=None):
+    # escuta o PEDIDO de um Jogador para construir uma Estufa, um Ateliê ou uma Loja
+    pedido = "construcao.solicitada"
+    tipo = dados.get("tipo") if isinstance(dados, dict) else None
+    custo = CUSTOS[tipo]
+    gastar_flores(custo["flores"])
+    estado["buques"] -= custo["buques"]
+    estado["floristas"] += 1
+    estado["construcoes"][tipo]["em_obra"] += 1
+    nome = jogadores[sid]["nome"]
+    # servidor -> TODOS: todos veem o canteiro novo e o estoque debitado
+    await sio.emit("construcao.iniciada", fato(pedido, tipo=tipo, por=nome))
