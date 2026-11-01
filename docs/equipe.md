@@ -65,9 +65,9 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M0A | Especificação e divisão da equipe | Julia | — | concluída | `370fd2c` |
 | M0B | Kit inicial do professor (sem alterações) | Eduarda | M0A | concluída | `68b3932` |
 | M1A | Estado inicial e `estado.sincronizado` no servidor | Julia | M0B | concluída | `2c7e1ad` |
-| M1B | Tela da floricultura sincronizada + rodapé | Eduarda | M1A | concluída | (registrado no próximo commit) |
+| M1B | Tela da floricultura sincronizada + rodapé | Eduarda | M1A | concluída | `b1438b7` |
 | M2A | Abertura da temporada no servidor | Julia | M1A | concluída | (registrado no próximo commit) |
-| M2B | Botão do Mestre e reação a `vila.iniciada` | Eduarda | M2A, M1B | pendente | — |
+| M2B | Botão do Mestre e reação a `vila.iniciada` | Eduarda | M2A, M1B | concluída | (registrado no próximo commit) |
 | M3A | Construção das três construções no servidor | Julia | M2A | pendente | — |
 | M3B | Botões de construção e canteiro na vila | Eduarda | M3A, M2B | pendente | — |
 | M4A | Validações e `operacao.recusada` | Julia | M3A | pendente | — |
