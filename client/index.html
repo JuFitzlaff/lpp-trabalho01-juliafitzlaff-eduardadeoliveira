@@ -71,7 +71,10 @@
         <button @click="abrirVila">Abrir temporada</button>
         <button @click="encerrarVila">Encerrar temporada</button>
       </template>
-      <button v-else @click="construir">🔨 Construir</button>
+      <template v-else>
+        <button v-for="(t, tipo) in TIPOS" @click="construir(tipo)">
+          {{ t.icone }} {{ t.nome }} ({{ textoCusto(tipo) }})</button>
+      </template>
     </section>
 
     <ul class="avisos">
@@ -117,9 +120,9 @@
 
   // Nome e ícone de cada construção da Floricultura (usados na vila e no painel).
   const TIPOS = {
-    estufa: { nome: "Estufa", icone: "🌱" },
-    atelie: { nome: "Ateliê", icone: "✂️" },
-    loja:   { nome: "Loja",   icone: "🏪" },
+    estufa: { nome: "Estufa", icone: "🌱", artigo: "uma" },
+    atelie: { nome: "Ateliê", icone: "✂️", artigo: "um" },
+    loja:   { nome: "Loja",   icone: "🏪", artigo: "uma" },
   };
 
   function criarJogo() {
@@ -177,14 +180,18 @@
             .setOrigin(0.5).setDepth(6);
         }
       }
-      criarObra(duracao) {
+      criarObra(duracao, tipo) {
         const { x, y } = this.lote(this.usados++);
         const canteiro = this.add.sprite(x, y, "sprites", 1);
         const fundo = this.add.rectangle(x - 10, y + 16, 20, 3, 0x333333).setOrigin(0, 0.5);
         const barra = this.add.rectangle(x - 10, y + 16, 20, 3, 0xffd54a).setOrigin(0, 0.5);
         barra.scaleX = 0;
         this.tweens.add({ targets: barra, scaleX: 1, duration: duracao });
-        this.obras.push({ canteiro, fundo, barra, x, y });
+        const icone = TIPOS[tipo]           // ícone apagado: mostra o que está sendo construído
+          ? this.add.text(x, y - 18, TIPOS[tipo].icone, { fontSize: "10px", resolution: 2 })
+              .setOrigin(0.5).setDepth(6).setAlpha(0.5)
+          : null;
+        this.obras.push({ canteiro, fundo, barra, icone, x, y });
       }
       flutuar(texto, x, y, cor) {
         const t = this.add.text(x, y, texto, {
@@ -203,8 +210,8 @@
             this.criarCasa(p.x, p.y, tipo);
           }
         }
-        for (const [, c] of construcoes) {              // obras em andamento
-          for (let i = 0; i < c.em_obra; i++) this.criarObra(estado.tempo_obra * 1000);
+        for (const [tipo, c] of construcoes) {          // obras em andamento
+          for (let i = 0; i < c.em_obra; i++) this.criarObra(estado.tempo_obra * 1000, tipo);
         }
         if (estado.fase === "aberta") this.vilaIniciada();
         if (estado.fase === "encerrada") this.vilaEncerrada();
@@ -212,9 +219,11 @@
       vilaIniciada() {                        // vila.iniciada
         this.faixa.setText("☀️ Temporada aberta");
       }
-      obraIniciada(estado) {                  // construcao.iniciada
-        this.criarObra(estado.tempo_obra * 1000);
-        this.flutuar("-" + estado.custo + " 🪵", this.acampamento.x, this.acampamento.y, "#b00020");
+      obraIniciada(estado, tipo) {            // construcao.iniciada
+        this.criarObra(estado.tempo_obra * 1000, tipo);
+        const c = estado.custos[tipo];
+        const gasto = "-" + c.flores + " 🌷" + (c.buques ? " -" + c.buques + " 💐" : "");
+        this.flutuar(gasto, this.acampamento.x, this.acampamento.y, "#b00020");
       }
       obraConcluida(estado) {                 // construcao.concluida
         const obra = this.obras.shift();
@@ -345,7 +354,15 @@
           jogo.vilaIniciada();
         });
 
-        // ETAPA 3: ouvir "construcao.iniciada"   -> jogo.obraIniciada(...)
+        // construcao.iniciada (servidor -> todos, causa: construcao.solicitada aceito).
+        // Por quê: o débito e o florista ocupado valem para todos; ninguém desconta nada por conta própria.
+        ouvir("construcao.iniciada", "mostra o canteiro da obra", (d) => {
+          atualizar(d);
+          const t = TIPOS[d.tipo];
+          avisar(d.por + " iniciou " + t.artigo + " " + t.nome);
+          jogo.obraIniciada(d.estado, d.tipo);
+        });
+
         // ETAPA 4: ouvir "operacao.recusada"     -> jogo.recusado(...)
         // ETAPA 5: ouvir "recurso.produzido"     -> jogo.recursoProduzido(...)
         //          e "construcao.concluida"      -> jogo.obraConcluida(...)
@@ -358,15 +375,21 @@
         // PEDIDO do Mestre: a tela não muda a fase sozinha, espera o fato vila.iniciada
         pedir("vila.abertura_solicitada");
       }
-      function construir() {
-        // ETAPA 3: pedir "construcao.solicitada"
+      function textoCusto(tipo) {            // ex.: "40 🌷 + 2 💐", a partir dos custos enviados pelo servidor
+        const c = estado.custos[tipo];
+        if (!c) return "";
+        return c.flores + " 🌷" + (c.buques ? " + " + c.buques + " 💐" : "");
+      }
+      function construir(tipo) {
+        // PEDIDO do Jogador: só diz o tipo; o servidor decide se aceita e quanto custa
+        pedir("construcao.solicitada", { tipo });
       }
       function encerrarVila() {
         // ETAPA 6: pedir "vila.encerramento_solicitado"
       }
 
       return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, porMinuto,
-               entrar, abrirVila, construir, encerrarVila };
+               entrar, abrirVila, construir, textoCusto, encerrarVila };
     }
   }).mount("#app");
 </script>
