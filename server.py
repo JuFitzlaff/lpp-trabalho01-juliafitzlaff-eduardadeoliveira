@@ -176,3 +176,19 @@ async def construir(sid, dados=None):
     nome = jogadores[sid]["nome"]
     # servidor -> TODOS: todos veem o canteiro novo e o estoque debitado
     await sio.emit("construcao.iniciada", fato(pedido, tipo=tipo, por=nome))
+    sio.start_background_task(obra, tipo, nome)     # o fato liga o temporizador desta obra
+
+
+async def obra(tipo, nome):
+    """Temporizador da obra: termina sozinha TEMPO_OBRA segundos depois de construcao.iniciada."""
+    await sio.sleep(TEMPO_OBRA)
+    if estado["fase"] != "aberta":
+        return                                      # temporada encerrada: a obra fica congelada
+    construcao = estado["construcoes"][tipo]
+    construcao["em_obra"] -= 1
+    construcao["prontas"] += 1
+    estado["floristas"] -= 1                        # o florista volta a ficar livre
+    if tipo == "estufa":
+        estado["producao"] += FLORES_POR_ESTUFA     # cada Estufa nova colhe +10 por colheita
+    # servidor -> TODOS, sem ninguém pedir: a causa é o temporizador ligado pela obra
+    await sio.emit("construcao.concluida", fato("temporizador da obra", tipo=tipo, por=nome))

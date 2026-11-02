@@ -48,7 +48,7 @@ da milestone que as conclui.
 
 - [X] T012 [M5A] [US4] Temporizador da colheita criando lotes e emitindo `recurso.produzido` em `server.py`
 - [X] T013 [M5B] [US4] Escuta de `recurso.produzido` com "+N 🌷" na Estufa em `client/index.html`
-- [ ] T014 [M6A] [US4] Temporizador da obra emitindo `construcao.concluida`, liberando florista e aplicando o efeito do tipo em `server.py`
+- [X] T014 [M6A] [US4] Temporizador da obra emitindo `construcao.concluida`, liberando florista e aplicando o efeito do tipo em `server.py`
 - [ ] T015 [M6B] [US4] Escuta de `construcao.concluida` transformando o canteiro na construção em `client/index.html`
 
 ## Fase 6: História 5 — Montagem de buquês (P2)

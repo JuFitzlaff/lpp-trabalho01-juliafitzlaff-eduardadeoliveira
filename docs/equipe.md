@@ -77,8 +77,8 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M4B | Reação à recusa (aviso e tremor) | Eduarda | M4A, M3B | concluída | `70ac610` |
 | M5A | Colheita automática por temporizador | Julia | M4A | concluída | `d0d26cb` |
 | M5B | Reação à colheita | Eduarda | M5A, M4B | concluída | (registrado no próximo commit) |
-| SK | Estrutura do Spec Kit (constituição, spec, plano, tarefas) | Julia | M5B | concluída | (registrado no próximo commit) |
-| M6A | Conclusão das obras por temporizador | Julia | M5A | pendente | — |
+| SK | Estrutura do Spec Kit (constituição, spec, plano, tarefas) | Julia | M5B | concluída | `6bff7ef` |
+| M6A | Conclusão das obras por temporizador | Julia | M5A | concluída | (registrado no próximo commit) |
 | M6B | Construção pronta na vila | Eduarda | M6A, M5B | pendente | — |
 | M7A | Montagem de buquês no Ateliê | Julia | M6A | pendente | — |
 | M7B | Botão e reações da montagem | Eduarda | M7A, M6B | pendente | — |
