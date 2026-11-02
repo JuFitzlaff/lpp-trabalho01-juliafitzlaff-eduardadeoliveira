@@ -45,6 +45,9 @@
 5. **Hash do commit.** Um commit não conhece o próprio hash. Cada desenvolvedora preenche o hash da
    sua milestone anterior no commit da milestone seguinte (as últimas são preenchidas em M12).
 6. **Status:** `pendente` → `em andamento` → `concluída`. Cada uma atualiza apenas as suas linhas.
+7. **Spec Kit.** Os princípios do projeto estão em `.specify/memory/constitution.md` e as tarefas em
+   `specs/001-floricultura/tasks.md`. No commit de cada milestone, a responsável também marca `[X]`
+   nas tarefas que concluiu.
 
 ### Como testar uma parte A (só servidor) antes da tela existir
 
@@ -72,8 +75,9 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M3B | Botões de construção e canteiro na vila | Eduarda | M3A, M2B | concluída | `f3c4019` |
 | M4A | Validações e `operacao.recusada` | Julia | M3A | concluída | `854d3a9` |
 | M4B | Reação à recusa (aviso e tremor) | Eduarda | M4A, M3B | concluída | `70ac610` |
-| M5A | Colheita automática por temporizador | Julia | M4A | concluída | (registrado no próximo commit) |
+| M5A | Colheita automática por temporizador | Julia | M4A | concluída | `d0d26cb` |
 | M5B | Reação à colheita | Eduarda | M5A, M4B | concluída | (registrado no próximo commit) |
+| SK | Estrutura do Spec Kit (constituição, spec, plano, tarefas) | Julia | M5B | concluída | (registrado no próximo commit) |
 | M6A | Conclusão das obras por temporizador | Julia | M5A | pendente | — |
 | M6B | Construção pronta na vila | Eduarda | M6A, M5B | pendente | — |
 | M7A | Montagem de buquês no Ateliê | Julia | M6A | pendente | — |
@@ -167,6 +171,14 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 - **Escopo:** `ouvir("recurso.produzido")` → atualiza e `jogo.recursoProduzido(...)` com "+N 🌷"; filtro
   "ocultar recurso.produzido" continua funcionando.
 - **Commit:** `feat: exibe colheita automatica de flores`
+
+### SK — Estrutura do Spec Kit · Julia
+- **Escopo:** `.specify/` (constituição com os princípios do projeto, templates e scripts oficiais do
+  GitHub Spec Kit) e `specs/001-floricultura/` (`spec.md`, `plan.md`, `tasks.md`). A especificação
+  oficial continua sendo `docs/especificacao.md`; os arquivos do Spec Kit apontam para ela.
+- **Conclusão:** constituição sem placeholders; spec, plano e tarefas coerentes com a especificação
+  e com esta tabela; tarefas das milestones já concluídas marcadas.
+- **Commit:** `docs: adiciona estrutura do spec kit`
 
 ### M6A — Conclusão das obras · Julia
 - **Escopo:** temporizador de obra (10 s) iniciado junto com `construcao.iniciada`; emite
