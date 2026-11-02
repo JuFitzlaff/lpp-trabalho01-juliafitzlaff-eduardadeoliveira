@@ -106,6 +106,7 @@ async def abrir_vila(sid, dados=None):
         return
     estado["fase"] = "aberta"
     sio.start_background_task(colheita)     # a abertura liga o temporizador da colheita
+    sio.start_background_task(vendas)       # e o temporizador de vendas da Loja
     # servidor -> TODOS: o fato muda a fase para todos os jogadores ao mesmo tempo
     await sio.emit("vila.iniciada", fato(pedido))
 
@@ -130,6 +131,21 @@ async def colheita():
         novo_lote(qtd)
         # servidor -> TODOS, sem ninguém pedir: a causa do fato é o temporizador
         await sio.emit("recurso.produzido", fato("temporizador da colheita", qtd=qtd))
+
+
+async def vendas():
+    """Temporizador de vendas: a cada INTERVALO_VENDAS, cada Loja pronta vende 1 buquê, se houver."""
+    while estado["fase"] == "aberta":
+        await sio.sleep(INTERVALO_VENDAS)
+        if estado["fase"] != "aberta":
+            break
+        qtd = min(estado["construcoes"]["loja"]["prontas"], estado["buques"])
+        if qtd == 0:
+            continue                            # sem Loja ou sem buquê: nada a anunciar
+        estado["buques"] -= qtd
+        estado["vendidos"] += qtd               # placar cooperativo da temporada
+        # servidor -> TODOS, sem ninguém pedir: a causa do fato é o temporizador de vendas
+        await sio.emit("buque.vendido", fato("temporizador de vendas", qtd=qtd))
 
 
 def gastar_flores(qtd):
