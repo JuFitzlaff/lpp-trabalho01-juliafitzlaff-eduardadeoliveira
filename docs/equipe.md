@@ -87,8 +87,8 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M9A | Validade dos lotes e murcha | Julia | M8A | concluída | `177bf81` |
 | M9B | Reação às flores murchas | Eduarda | M9A, M8B | concluída | `3b0ac7c` |
 | M10A | Encerramento e revisão de concorrência | Julia | M9A | concluída | (registrado no próximo commit) |
-| M10B | Botão de encerrar e vila encerrada | Eduarda | M10A, M9B | concluída | (registrado no próximo commit) |
-| M11 | Identidade visual, contadores e painel completo | Eduarda | M10B | pendente | — |
+| M10B | Botão de encerrar e vila encerrada | Eduarda | M10A, M9B | concluída | `c0fe25e` |
+| M11 | Identidade visual, contadores e painel completo | Eduarda | M10B | concluída | (registrado no próximo commit) |
 | M12A | README: instalação, eventos e respostas | Julia | M11 | pendente | — |
 | M12B | README: testes, IA e créditos + teste final com 3 abas | Eduarda | M12A | pendente | — |
 

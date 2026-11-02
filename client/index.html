@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Floricultura em Tempo Real</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 580px; margin: 24px auto; padding: 0 12px; }
-    .cartao, .painel { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin: 12px 0; }
+    body { font-family: system-ui, sans-serif; max-width: 580px; margin: 24px auto; padding: 0 12px;
+           background: #fff8fb; color: #2d2a2e; }
+    h1 { color: #ad1457; }
+    .cartao, .painel { border: 1px solid #f3c6d8; border-radius: 8px; padding: 12px; margin: 12px 0; background: #fff; }
     .painel p { margin: 6px 0; }
-    button { padding: 8px 14px; margin-right: 6px; border-radius: 6px; border: 1px solid #888; cursor: pointer; }
+    button { padding: 8px 14px; margin: 0 6px 6px 0; border-radius: 6px; border: 1px solid #d81b60;
+             background: #fce4ec; color: #4a1530; cursor: pointer; }
+    button:hover { background: #f8bbd0; }
+    progress { accent-color: #d81b60; }
+    .contadores { margin: 4px 0 8px; }
     input { padding: 8px; margin-bottom: 8px; width: 100%; box-sizing: border-box; }
     .avisos { list-style: none; padding: 0; }
     .avisos li { padding: 6px 10px; margin: 4px 0; border-radius: 6px; background: #eef; }
@@ -91,7 +97,11 @@
         <span class="badge emit">⬆ emit</span> este cliente PEDIU algo ao servidor ·
         <span class="badge on">⬇ on</span> este cliente ESCUTOU um evento e reagiu
       </p>
-      <!-- ETAPA 7 (dupla): cole aqui os contadores por evento -->
+      <!-- Contadores por evento (dupla): quantas vezes cada evento foi emitido ou escutado nesta aba -->
+      <div class="contadores">
+        <span v-for="(n, nome) in contadores" class="chip">{{ nome }} ×{{ n }}</span>
+        <span v-if="!Object.keys(contadores).length" class="vazio">Nenhum evento contado ainda.</span>
+      </div>
       <label><input type="checkbox" v-model="ocultarProducao"> ocultar recurso.produzido (é muito frequente)</label>
       <label><input type="checkbox" v-model="ocultarMurcha"> ocultar flores.murchadas (frequente depois de 30 s)</label>
       <ul>
@@ -152,7 +162,7 @@
         mapa.createLayer("chao", tileset);
         mapa.createLayer("decoracao", tileset);
 
-        // 2) pontos marcados no mapa: onde ficam as obras e o acampamento de lenha
+        // 2) pontos marcados no mapa: onde ficam as obras e o depósito (ponto "acampamento" do mapa)
         const pontos = mapa.getObjectLayer("pontos").objects;
         this.lotes = pontos.filter((p) => p.name.startsWith("lote"))
           .sort((a, b) => a.name.localeCompare(b.name, "pt", { numeric: true }));
@@ -182,9 +192,11 @@
       criarCasa(x, y, tipo) {
         const casa = this.add.sprite(x, y, "sprites", 0);
         this.tweens.add({ targets: casa, scale: { from: 0.3, to: 1 }, duration: 400, ease: "Back.Out" });
-        if (TIPOS[tipo]) {                    // ícone do tipo acima da construção pronta
-          this.add.text(x, y - 18, TIPOS[tipo].icone, { fontSize: "10px", resolution: 2 })
-            .setOrigin(0.5).setDepth(6);
+        if (TIPOS[tipo]) {                    // ícone e nome do tipo embaixo da construção pronta
+          this.add.text(x, y + 22, TIPOS[tipo].icone + " " + TIPOS[tipo].nome, {
+            fontSize: "7px", color: "#ffffff", backgroundColor: "#ad1457cc",
+            padding: { x: 2, y: 1 }, resolution: 3,
+          }).setOrigin(0.5).setDepth(6);
         }
         if (tipo === "estufa") this.estufas.push({ x, y });   // de onde sobem as flores colhidas
         if (tipo === "atelie") this.atelies.push({ x, y });   // onde os buquês são montados
@@ -197,9 +209,11 @@
         const barra = this.add.rectangle(x - 10, y + 16, 20, 3, 0xffd54a).setOrigin(0, 0.5);
         barra.scaleX = 0;
         this.tweens.add({ targets: barra, scaleX: 1, duration: duracao });
-        const icone = TIPOS[tipo]           // ícone apagado: mostra o que está sendo construído
-          ? this.add.text(x, y - 18, TIPOS[tipo].icone, { fontSize: "10px", resolution: 2 })
-              .setOrigin(0.5).setDepth(6).setAlpha(0.5)
+        const icone = TIPOS[tipo]           // rótulo apagado: mostra o que está sendo construído
+          ? this.add.text(x, y + 23, TIPOS[tipo].icone + " " + TIPOS[tipo].nome, {
+              fontSize: "7px", color: "#ffffff", backgroundColor: "#55555599",
+              padding: { x: 2, y: 1 }, resolution: 3,
+            }).setOrigin(0.5).setDepth(6)
           : null;
         this.obras.push({ canteiro, fundo, barra, icone, x, y });
       }

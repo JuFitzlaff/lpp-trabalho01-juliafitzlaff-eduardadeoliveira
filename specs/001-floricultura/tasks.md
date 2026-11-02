@@ -73,7 +73,7 @@ da milestone que as conclui.
 
 ## Fase 10: História 9 e acabamento
 
-- [ ] T024 [M11] [US9] Contadores por evento, identidade visual e feedback revisado em `client/index.html`
+- [X] T024 [M11] [US9] Contadores por evento, identidade visual e feedback revisado em `client/index.html`
 - [ ] T025 [M12A] README: instalação, eventos e respostas às perguntas
 - [ ] T026 [M12B] README: testes com três abas, declaração de uso de IA, créditos; teste final
 
