@@ -21,8 +21,21 @@
     .avisos li.ok { background: #dfd; }
     .avisos li.erro { background: #fdd; }
     .avisos li.murcha { background: #fff3cd; }
-    #jogo { margin: 12px 0; border-radius: 8px; overflow: hidden; line-height: 0; }
+    .tela { position: relative; margin: 12px 0; }
+    #jogo { border-radius: 8px; overflow: hidden; line-height: 0; }
     #jogo canvas { width: 100% !important; height: auto !important; image-rendering: pixelated; }
+    /* placar (HUD) e legenda ficam por cima da vila, como camadas da tela do jogo */
+    .hud { position: absolute; left: 6px; right: 6px; bottom: 6px; margin: 0; padding: 4px 8px; border: none;
+           display: flex; flex-wrap: wrap; gap: 0 12px; background: rgba(60, 10, 35, 0.8); color: #fff;
+           font-size: 12px; line-height: 1.45; pointer-events: none; }
+    .hud p { margin: 0; }
+    .hud progress { width: 48px; height: 8px; vertical-align: middle; }
+    .hud .tipo { margin-right: 8px; }
+    .hud em { font-style: normal; color: #ffd54a; }
+    .legenda-jogo { position: absolute; top: 6px; right: 6px; max-width: 140px; padding: 2px 6px; border-radius: 6px;
+                    background: rgba(255, 255, 255, 0.9); font-size: 10px; line-height: 1.35; }
+    .legenda-jogo button { margin: 0; padding: 0 2px; border: none; background: none; font-size: 10px; }
+    .legenda-jogo ul { list-style: none; margin: 1px 0 2px; padding: 0; }
     .eventos { border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin: 12px 0; background: #fafafa; }
     .eventos h2 { margin: 0 0 6px; font-size: 16px; }
     .eventos .legenda { font-size: 12px; margin: 4px 0 8px; }
@@ -61,18 +74,33 @@
     <h1>🌷 Floricultura</h1>
     <p>{{ papel }}: <strong>{{ nome || "Anônimo" }}</strong> · Temporada: <strong>{{ estado.fase }}</strong></p>
 
-    <!-- A vila desenhada pelo Phaser aparece aqui -->
-    <div id="jogo"></div>
+    <!-- Tela do jogo: a vila desenhada (Phaser) com o placar e a legenda por cima -->
+    <div class="tela">
+      <div id="jogo"></div>
 
-    <section class="painel">
-      <p>🌷 Flores: <strong>{{ estado.flores }}</strong> (+{{ porMinuto }}/min · murcham {{ estado.validade }} s após a colheita)</p>
-      <p>💐 Buquês: <strong>{{ estado.buques }}</strong> ({{ estado.montagens }} em montagem)
-        · 🧾 Vendidos: <strong>{{ estado.vendidos }}</strong></p>
-      <p>🧑‍🌾 Floristas: {{ estado.floristas }}/{{ estado.limite }}
-        <progress :value="estado.floristas" :max="estado.limite"></progress></p>
-      <p v-for="(c, tipo) in estado.construcoes">{{ TIPOS[tipo].icone }} {{ TIPOS[tipo].nome }}:
-        {{ c.prontas }} pronta(s), {{ c.em_obra }} em obra</p>
-    </section>
+      <!-- Placar: mostra o retrato que veio no último fato do servidor (nada é calculado aqui) -->
+      <section class="painel hud">
+        <p>🌷 Flores: <strong>{{ estado.flores }}</strong> (+{{ porMinuto }}/min)</p>
+        <p>💐 Buquês: <strong>{{ estado.buques }}</strong> ({{ estado.montagens }} em montagem)</p>
+        <p>🧾 Vendidos: <strong>{{ estado.vendidos }}</strong></p>
+        <p>🧑‍🌾 Floristas: {{ estado.floristas }}/{{ estado.limite }}
+          <progress :value="estado.floristas" :max="estado.limite"></progress></p>
+        <p><span v-for="(c, tipo) in estado.construcoes" class="tipo" :title="TIPOS[tipo].nome">{{ TIPOS[tipo].icone }} {{ c.prontas }}<em v-if="c.em_obra"> +{{ c.em_obra }}🚧</em></span></p>
+      </section>
+
+      <!-- Legenda: o que é cada coisa (só visual; pode ser recolhida) -->
+      <section class="legenda-jogo">
+        <button @click="mostrarLegenda = !mostrarLegenda">❔ {{ mostrarLegenda ? "Legenda" : "" }}</button>
+        <ul v-if="mostrarLegenda">
+          <li>🌱 <b>Estufa</b>: colhe 🌷 a cada {{ estado.intervalo }} s</li>
+          <li>✂️ <b>Ateliê</b>: {{ estado.flores_por_buque }} 🌷 → 1 💐</li>
+          <li>🏪 <b>Loja</b>: vende 1 💐 a cada {{ estado.intervalo_vendas }} s</li>
+          <li>💐 <b>Buquê</b>: feito no Ateliê</li>
+          <li>🥀 🌷 murcham em {{ estado.validade }} s</li>
+          <li>🚧 obra (ocupa 1 florista)</li>
+        </ul>
+      </section>
+    </div>
 
     <section>
       <template v-if="papel === 'mestre'">
@@ -332,6 +360,7 @@
       const contadores = reactive({});      // quantas vezes cada evento ocorreu
       const ocultarProducao = ref(false);
       const ocultarMurcha = ref(false);
+      const mostrarLegenda = ref(true);     // preferência visual desta aba (não é estado do jogo)
       const eventosVisiveis = computed(() =>
         eventos.value.filter((e) => !(ocultarProducao.value && e.nome === "recurso.produzido")
                                  && !(ocultarMurcha.value && e.nome === "flores.murchadas")));
@@ -501,7 +530,7 @@
         pedir("vila.encerramento_solicitado");
       }
 
-      return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, ocultarMurcha, porMinuto,
+      return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, ocultarMurcha, mostrarLegenda, porMinuto,
                entrar, abrirVila, construir, textoCusto, montarBuque, encerrarVila };
     }
   }).mount("#app");

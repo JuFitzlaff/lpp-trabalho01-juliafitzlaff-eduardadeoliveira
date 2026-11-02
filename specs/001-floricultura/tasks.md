@@ -77,6 +77,10 @@ da milestone que as conclui.
 - [X] T025 [M12A] README: instalação, eventos e respostas às perguntas
 - [X] T026 [M12B] README: testes com três abas, declaração de uso de IA, créditos; teste final
 
+## Fase 11: Extras (depois do escopo obrigatório)
+
+- [X] T027 [M13] Placar (barra de status) e legenda dentro da tela do jogo em `client/index.html`
+
 ---
 
 ## Dependências e ordem

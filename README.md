@@ -180,6 +180,16 @@ Conforme requisitado no enunciado, criamos a especificação (`docs/especificaca
 desenvolvimento e separamos o trabalho entre a equipe (`docs/equipe.md`): Julia no servidor e Eduarda
 na tela.
 
+## Extras
+
+Feitos depois de todo o escopo obrigatório estar pronto e testado:
+
+- **Placar e legenda dentro da tela do jogo:** os números da floricultura (flores, buquês, vendidos,
+  floristas e construções) aparecem numa barra de status sobre a vila, e uma legenda recolhível (❔) no
+  canto da tela explica o que são a Estufa, o Ateliê, a Loja, o Buquê, a murcha e as obras, usando os
+  números enviados pelo servidor. O placar só reflete o retrato do último fato recebido; nada é calculado
+  no cliente.
+
 ## Créditos
 
 - Mapa, peças do cenário e sprites (`client/assets/`): Kit Inicial da disciplina — arte original de uso

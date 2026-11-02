@@ -90,7 +90,8 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M10B | Botão de encerrar e vila encerrada | Eduarda | M10A, M9B | concluída | `c0fe25e` |
 | M11 | Identidade visual, contadores e painel completo | Eduarda | M10B | concluída | `92aa5c8` |
 | M12A | README: instalação, eventos e respostas | Julia | M11 | concluída | `0197204` |
-| M12B | README: testes, IA e créditos + teste final com 3 abas | Eduarda | M12A | concluída | último commit do histórico |
+| M12B | README: testes, IA e créditos + teste final com 3 abas | Eduarda | M12A | concluída | `464554a` |
+| M13 | Extra: placar e legenda dentro da tela do jogo | Eduarda | M12B | concluída | último commit do histórico |
 
 ## 5. Detalhamento
 
@@ -247,6 +248,17 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 - **Escopo:** como testar com três abas (Mestre, Jogador A, Jogador B), declaração de uso de IA, créditos;
   checklist de entrega conferido.
 - **Commit:** `docs: documenta testes e uso de ia no readme`
+
+### M13 — Extra: placar e legenda dentro da tela do jogo · Eduarda
+- **Por quê:** melhoria de interface pedida depois de todo o escopo obrigatório pronto (o enunciado
+  aceita extras nessa condição, listados no README).
+- **Escopo:** o quadro de números que ficava embaixo da vila vira uma barra de status por cima da vila
+  (flores, buquês, vendidos, floristas e construções por tipo); legenda recolhível no canto superior
+  direito explicando Estufa, Ateliê, Loja, Buquê, murcha e obra, com os números enviados pelo servidor.
+  Só `client/index.html`; servidor e contrato de eventos não mudam.
+- **Conclusão:** placar e legenda dentro da área da vila sem cobrir nenhum dos 6 lotes; placar atualizado
+  a cada fato recebido; todos os testes anteriores continuam passando.
+- **Commit:** `feat: adiciona placar e legenda na tela do jogo`
 
 ## 6. Roteiro do teste final (três abas)
 
