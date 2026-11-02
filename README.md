@@ -128,14 +128,63 @@ só para quem acabou de entrar.
 - **Painel de eventos**: mostra em tempo real cada `⬆ emit` e `⬇ on`, com horário, dados, causa,
   reação e contadores por evento — o encadeamento pedido → fato → temporizador → fato aparece na tela.
 
-## Como testar com duas abas
+## Como testar com duas abas (ou três)
 
-(Passo a passo: quem entra como Mestre, quem entra como Jogador, o que clicar e o que deve aparecer.)
+Com o servidor rodando, abra **http://localhost:8000** em três abas lado a lado:
+
+| Aba | Nome | Botão |
+|---|---|---|
+| 1 | Mestre (ex.: Mia) | Entrar como Mestre |
+| 2 | Jogador A (ex.: Ana) | Entrar como Jogador |
+| 3 | Jogador B (ex.: Bia) | Entrar como Jogador |
+
+1. **Sincronização:** as três abas mostram 100 flores, 0 buquês, floristas 0/3 e 1 Estufa pronta.
+   No painel de cada uma aparece `⬇ on estado.sincronizado` com causa `conexao`.
+2. **Recusa antes da abertura:** na Ana, clique em **🌱 Estufa**. Só a aba da Ana mostra o aviso
+   vermelho "A temporada não está aberta" e a vila treme; as outras abas não recebem nada.
+3. **Abertura:** no Mestre, clique em **Abrir temporada**. As três abas passam para "Temporada aberta"
+   sem recarregar. Só o Mestre vê o `⬆ emit vila.abertura_solicitada`.
+4. **Colheita automática:** sem clicar em nada, as flores sobem 10 a cada 5 s em todas as abas e um
+   "+10 🌷" sobe da Estufa. No painel, `recurso.produzido` aparece com causa "temporizador da colheita".
+5. **Construção:** na Ana, clique em **✂️ Ateliê**. Todas as abas veem −50 flores, floristas 1/3 e o
+   canteiro na vila. Uns 10 s depois a obra termina sozinha (`construcao.concluida`) e o florista é liberado.
+6. **Transformação:** na Ana, clique em **💐 Montar buquê**: −5 flores e "1 em montagem" para todos.
+   Se a Bia clicar antes de terminar, só ela recebe "Todos os ateliês estão ocupados". Depois de 6 s,
+   todos veem +1 buquê (`buque.montado`).
+7. **Loja e vendas:** a Loja é recusada enquanto faltam buquês ("Buquês insuficientes"). Com 2 buquês,
+   construa a Loja; quando ela fica pronta, a cada 10 s um buquê é vendido e o placar "Vendidos" sobe
+   em todas as abas (`buque.vendido`).
+8. **Disputa pelo último florista:** com 2 de 3 floristas ocupados, clique em **🌱 Estufa** na Ana e na
+   Bia quase ao mesmo tempo. Só uma consegue (3/3); a outra recebe "Nenhum florista livre". Os floristas
+   nunca passam de 3/3 e as flores nunca ficam negativas.
+9. **Flores murchas:** 30 s depois de cada colheita, o que sobrou do lote murcha. Todas as abas veem o
+   aviso amarelo "🥀 N flores murcharam" e o estoque cai (`flores.murchadas`).
+10. **Encerramento:** no Mestre, clique em **Encerrar temporada**. Todas as abas escurecem e mostram o
+    placar final. A partir daí nada mais muda e qualquer pedido é recusado.
+11. **Painel de eventos:** em cada aba confira `⬆ emit` (pedidos daquela aba) e `⬇ on` (fatos recebidos),
+    com horário, dados, causa, reação e os **contadores por evento** no topo do painel.
+
+Com duas abas (Mestre e um Jogador) os passos 1 a 7, 9 e 10 funcionam do mesmo jeito; a terceira aba
+serve para ver as recusas individuais e a disputa.
 
 ## Uso de IA
 
-(O que usou e o que mudou. Se não usou: "Não utilizei IA".)
+Usamos IA para estruturar o que cada uma de nós deveria fazer e como fazer:
+
+- **Claude (Anthropic)** serviu como co-programador do projeto: ajudou a organizar a divisão do
+  trabalho, a planejar as milestones e a implementar e testar cada etapa.
+- **GitHub Spec Kit** foi usado para organizar a especificação, o plano e as tarefas
+  (`.specify/` e `specs/`), para que não houvesse erros durante o projeto.
+
+Conforme requisitado no enunciado, criamos a especificação (`docs/especificacao.md`) antes de iniciar o
+desenvolvimento e separamos o trabalho entre a equipe (`docs/equipe.md`): Julia no servidor e Eduarda
+na tela.
 
 ## Créditos
 
-(Recursos visuais de terceiros, se houver.)
+- Mapa, peças do cenário e sprites (`client/assets/`): Kit Inicial da disciplina — arte original de uso
+  livre nos trabalhos da disciplina (ver `client/assets/LEIA-ME.txt`).
+- Ícones da interface e da vila: emojis do sistema.
+- Bibliotecas carregadas por CDN: Vue 3, Socket.IO e Phaser 3 (licenças MIT).
+
+Nenhuma arte de terceiros fora do Kit Inicial foi usada.

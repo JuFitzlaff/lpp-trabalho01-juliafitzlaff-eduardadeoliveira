@@ -88,9 +88,9 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M9B | Reação às flores murchas | Eduarda | M9A, M8B | concluída | `3b0ac7c` |
 | M10A | Encerramento e revisão de concorrência | Julia | M9A | concluída | `6350b8b` |
 | M10B | Botão de encerrar e vila encerrada | Eduarda | M10A, M9B | concluída | `c0fe25e` |
-| M11 | Identidade visual, contadores e painel completo | Eduarda | M10B | concluída | (registrado no próximo commit) |
-| M12A | README: instalação, eventos e respostas | Julia | M11 | concluída | (registrado no próximo commit) |
-| M12B | README: testes, IA e créditos + teste final com 3 abas | Eduarda | M12A | pendente | — |
+| M11 | Identidade visual, contadores e painel completo | Eduarda | M10B | concluída | `92aa5c8` |
+| M12A | README: instalação, eventos e respostas | Julia | M11 | concluída | `0197204` |
+| M12B | README: testes, IA e créditos + teste final com 3 abas | Eduarda | M12A | concluída | último commit do histórico |
 
 ## 5. Detalhamento
 
@@ -252,14 +252,14 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 
 Aba 1 Mestre · Aba 2 Jogador A · Aba 3 Jogador B.
 
-- [ ] Sincronização: as três abas mostram os mesmos números o tempo todo.
-- [ ] Recusas individuais antes da abertura e com a temporada aberta.
-- [ ] Colheita automática a cada 5 s.
-- [ ] Construção simultânea por A e B.
-- [ ] Limite de 3 floristas e disputa pelo último florista.
-- [ ] Disputa pelas últimas flores.
-- [ ] Transformação de flores em buquês e Ateliê ocupado.
-- [ ] Construção da Loja e vendas automáticas.
-- [ ] Murcha de flores após 30 s.
-- [ ] Encerramento: nada mais muda e todo pedido é recusado.
-- [ ] Contadores por evento e rodapé com os nomes.
+- [X] Sincronização: as três abas mostram os mesmos números o tempo todo.
+- [X] Recusas individuais antes da abertura e com a temporada aberta.
+- [X] Colheita automática a cada 5 s.
+- [X] Construção simultânea por A e B.
+- [X] Limite de 3 floristas e disputa pelo último florista.
+- [X] Disputa pelas últimas flores.
+- [X] Transformação de flores em buquês e Ateliê ocupado.
+- [X] Construção da Loja e vendas automáticas.
+- [X] Murcha de flores após 30 s.
+- [X] Encerramento: nada mais muda e todo pedido é recusado.
+- [X] Contadores por evento e rodapé com os nomes.

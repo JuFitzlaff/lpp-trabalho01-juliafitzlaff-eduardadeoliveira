@@ -75,7 +75,7 @@ da milestone que as conclui.
 
 - [X] T024 [M11] [US9] Contadores por evento, identidade visual e feedback revisado em `client/index.html`
 - [X] T025 [M12A] README: instalação, eventos e respostas às perguntas
-- [ ] T026 [M12B] README: testes com três abas, declaração de uso de IA, créditos; teste final
+- [X] T026 [M12B] README: testes com três abas, declaração de uso de IA, créditos; teste final
 
 ---
 
