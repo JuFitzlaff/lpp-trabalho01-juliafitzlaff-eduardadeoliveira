@@ -83,9 +83,9 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M7A | Montagem de buquês no Ateliê | Julia | M6A | concluída | `981e3a7` |
 | M7B | Botão e reações da montagem | Eduarda | M7A, M6B | concluída | `b939a90` |
 | M8A | Vendas automáticas na Loja | Julia | M7A | concluída | `47a07f0` |
-| M8B | Reação às vendas e placar | Eduarda | M8A, M7B | concluída | (registrado no próximo commit) |
+| M8B | Reação às vendas e placar | Eduarda | M8A, M7B | concluída | `39f9d33` |
 | M9A | Validade dos lotes e murcha | Julia | M8A | concluída | (registrado no próximo commit) |
-| M9B | Reação às flores murchas | Eduarda | M9A, M8B | pendente | — |
+| M9B | Reação às flores murchas | Eduarda | M9A, M8B | concluída | (registrado no próximo commit) |
 | M10A | Encerramento e revisão de concorrência | Julia | M9A | pendente | — |
 | M10B | Botão de encerrar e vila encerrada | Eduarda | M10A, M9B | pendente | — |
 | M11 | Identidade visual, contadores e painel completo | Eduarda | M10B | pendente | — |

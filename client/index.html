@@ -14,6 +14,7 @@
     .avisos li { padding: 6px 10px; margin: 4px 0; border-radius: 6px; background: #eef; }
     .avisos li.ok { background: #dfd; }
     .avisos li.erro { background: #fdd; }
+    .avisos li.murcha { background: #fff3cd; }
     #jogo { margin: 12px 0; border-radius: 8px; overflow: hidden; line-height: 0; }
     #jogo canvas { width: 100% !important; height: auto !important; image-rendering: pixelated; }
     .eventos { border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin: 12px 0; background: #fafafa; }
@@ -92,6 +93,7 @@
       </p>
       <!-- ETAPA 7 (dupla): cole aqui os contadores por evento -->
       <label><input type="checkbox" v-model="ocultarProducao"> ocultar recurso.produzido (é muito frequente)</label>
+      <label><input type="checkbox" v-model="ocultarMurcha"> ocultar flores.murchadas (frequente depois de 30 s)</label>
       <ul>
         <li v-for="e in eventosVisiveis" :class="e.tipo">
           <span class="badge" :class="e.sentido === 'enviado' ? 'emit' : 'on'">{{ e.sentido === 'enviado' ? '⬆ emit' : '⬇ on' }}</span>
@@ -257,6 +259,10 @@
         const l = this.lojas[0] || this.acampamento;
         this.flutuar("-" + qtd + " 💐 vendido!", l.x + 18, l.y, "#6a1b9a");
       }
+      floresMurcharam(qtd) {                  // flores.murchadas
+        const origem = this.estufas[0] || this.acampamento;
+        this.flutuar("🥀 -" + qtd, origem.x - 18, origem.y, "#795548");
+      }
       recusado(motivo) {                      // operacao.recusada (só quem pediu)
         this.cameras.main.shake(180, 0.006);
         this.flutuar("✋ " + motivo, this.larg / 2, this.alt - 28, "#b00020");
@@ -283,6 +289,7 @@
       montagemIniciada: (...a) => chamar("montagemIniciada", ...a),
       buqueMontado: (...a) => chamar("buqueMontado", ...a),
       buqueVendido: (...a) => chamar("buqueVendido", ...a),
+      floresMurcharam: (...a) => chamar("floresMurcharam", ...a),
       recusado: (...a) => chamar("recusado", ...a),
       vilaEncerrada: (...a) => chamar("vilaEncerrada", ...a),
     };
@@ -310,8 +317,10 @@
       const eventos = ref([]);              // linha do tempo do painel de eventos
       const contadores = reactive({});      // quantas vezes cada evento ocorreu
       const ocultarProducao = ref(false);
+      const ocultarMurcha = ref(false);
       const eventosVisiveis = computed(() =>
-        eventos.value.filter((e) => !(ocultarProducao.value && e.nome === "recurso.produzido")));
+        eventos.value.filter((e) => !(ocultarProducao.value && e.nome === "recurso.produzido")
+                                 && !(ocultarMurcha.value && e.nome === "flores.murchadas")));
       const jogo = criarJogo();      // a vila desenhada (Phaser)
       let socket = null;
 
@@ -437,6 +446,14 @@
           jogo.buqueVendido(d.qtd);
         });
 
+        // flores.murchadas (servidor -> todos, causa: temporizador de validade do lote).
+        // Por quê: o prazo é controlado no servidor; todas as abas perdem as mesmas flores ao mesmo tempo.
+        ouvir("flores.murchadas", "tira as flores murchas e mostra o 🥀", (d) => {
+          atualizar(d);
+          avisar("🥀 " + d.qtd + " flores murcharam (lote " + d.lote + ")", "murcha");
+          jogo.floresMurcharam(d.qtd);
+        });
+
         // ETAPA 6: ouvir "vila.encerrada"        -> jogo.vilaEncerrada()
       }
 
@@ -463,7 +480,7 @@
         // ETAPA 6: pedir "vila.encerramento_solicitado"
       }
 
-      return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, porMinuto,
+      return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, ocultarMurcha, porMinuto,
                entrar, abrirVila, construir, textoCusto, montarBuque, encerrarVila };
     }
   }).mount("#app");

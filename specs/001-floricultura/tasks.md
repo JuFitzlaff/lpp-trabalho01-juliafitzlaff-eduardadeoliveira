@@ -64,7 +64,7 @@ da milestone que as conclui.
 ## Fase 8: História 7 — Flores murcham (P2)
 
 - [X] T020 [M9A] [US7] Temporizador de validade por lote emitindo `flores.murchadas` em `server.py`
-- [ ] T021 [M9B] [US7] Escuta de `flores.murchadas` com aviso e "🥀 −N" em `client/index.html`
+- [X] T021 [M9B] [US7] Escuta de `flores.murchadas` com aviso e "🥀 −N" em `client/index.html`
 
 ## Fase 9: História 8 — Encerramento (P1)
 
