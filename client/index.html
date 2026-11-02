@@ -454,7 +454,13 @@
           jogo.floresMurcharam(d.qtd);
         });
 
-        // ETAPA 6: ouvir "vila.encerrada"        -> jogo.vilaEncerrada()
+        // vila.encerrada (servidor -> todos, causa: vila.encerramento_solicitado do Mestre).
+        // Por quê: o fim vale para todos; daqui em diante o servidor recusa qualquer pedido.
+        ouvir("vila.encerrada", "escurece a vila e mostra o placar final", (d) => {
+          atualizar(d);
+          avisar("Temporada encerrada! Buquês vendidos: " + d.estado.vendidos);
+          jogo.vilaEncerrada();
+        });
       }
 
       // ===== PEDIDOS (emit): o cliente PEDE algo ao servidor =====
@@ -477,7 +483,8 @@
         pedir("buque.montagem_solicitada");
       }
       function encerrarVila() {
-        // ETAPA 6: pedir "vila.encerramento_solicitado"
+        // PEDIDO do Mestre: a temporada só acaba quando o servidor confirma com vila.encerrada
+        pedir("vila.encerramento_solicitado");
       }
 
       return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, ocultarMurcha, porMinuto,
