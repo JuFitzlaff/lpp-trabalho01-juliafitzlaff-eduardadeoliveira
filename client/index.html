@@ -227,12 +227,13 @@
         const gasto = "-" + c.flores + " 🌷" + (c.buques ? " -" + c.buques + " 💐" : "");
         this.flutuar(gasto, this.acampamento.x, this.acampamento.y, "#b00020");
       }
-      obraConcluida(estado) {                 // construcao.concluida
-        const obra = this.obras.shift();
+      obraConcluida(tipo) {                   // construcao.concluida
+        const obra = this.obras.shift();      // obras têm o mesmo tempo: a mais antiga termina primeiro
         if (!obra) return;
         obra.canteiro.destroy(); obra.fundo.destroy(); obra.barra.destroy();
-        this.criarCasa(obra.x, obra.y);
-        this.flutuar("🏠 Obra concluída!", obra.x, obra.y - 18, "#1b5e20");
+        if (obra.icone) obra.icone.destroy();
+        this.criarCasa(obra.x, obra.y, tipo);
+        this.flutuar(TIPOS[tipo].icone + " Obra concluída!", obra.x, obra.y + 4, "#1b5e20");
       }
       recursoProduzido(qtd) {                 // recurso.produzido
         const origem = this.estufas[0] || this.acampamento;
@@ -380,7 +381,16 @@
           jogo.recursoProduzido(d.qtd);
         });
 
-        // ETAPA 5: ouvir "construcao.concluida"  -> jogo.obraConcluida(...)
+        // construcao.concluida (servidor -> todos, causa: temporizador da obra).
+        // Por quê: a obra termina sozinha no servidor; todas as abas trocam o canteiro ao mesmo tempo.
+        ouvir("construcao.concluida", "transforma o canteiro na construção pronta", (d) => {
+          atualizar(d);
+          const t = TIPOS[d.tipo];
+          const efeito = d.tipo === "estufa" ? " A colheita aumentou." : "";
+          avisar("Obra concluída: " + t.nome + " de " + d.por + "." + efeito, "ok");
+          jogo.obraConcluida(d.tipo);
+        });
+
         // ETAPA 6: ouvir "vila.encerrada"        -> jogo.vilaEncerrada()
       }
 
