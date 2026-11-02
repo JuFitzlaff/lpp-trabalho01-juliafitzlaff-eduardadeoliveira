@@ -164,6 +164,7 @@
         this.obras = [];      // obras em andamento (a primeira a começar é a primeira a terminar)
         this.estufas = [];    // posições das Estufas prontas
         this.atelies = [];    // posições dos Ateliês prontos
+        this.lojas = [];      // posições das Lojas prontas
         this.usados = 0;      // quantos lotes já foram usados
         this.faixa = this.add.text(this.larg / 2, 9, "⏳ Aguardando o Mestre", {
           fontSize: "8px", color: "#ffffff", backgroundColor: "#00000099",
@@ -185,6 +186,7 @@
         }
         if (tipo === "estufa") this.estufas.push({ x, y });   // de onde sobem as flores colhidas
         if (tipo === "atelie") this.atelies.push({ x, y });   // onde os buquês são montados
+        if (tipo === "loja") this.lojas.push({ x, y });       // de onde saem os buquês vendidos
       }
       criarObra(duracao, tipo) {
         const { x, y } = this.lote(this.usados++);
@@ -251,6 +253,10 @@
         const a = this.atelies[0] || this.acampamento;
         this.flutuar("+1 💐", a.x + 18, a.y, "#1b5e20");
       }
+      buqueVendido(qtd) {                     // buque.vendido
+        const l = this.lojas[0] || this.acampamento;
+        this.flutuar("-" + qtd + " 💐 vendido!", l.x + 18, l.y, "#6a1b9a");
+      }
       recusado(motivo) {                      // operacao.recusada (só quem pediu)
         this.cameras.main.shake(180, 0.006);
         this.flutuar("✋ " + motivo, this.larg / 2, this.alt - 28, "#b00020");
@@ -276,6 +282,7 @@
       recursoProduzido: (...a) => chamar("recursoProduzido", ...a),
       montagemIniciada: (...a) => chamar("montagemIniciada", ...a),
       buqueMontado: (...a) => chamar("buqueMontado", ...a),
+      buqueVendido: (...a) => chamar("buqueVendido", ...a),
       recusado: (...a) => chamar("recusado", ...a),
       vilaEncerrada: (...a) => chamar("vilaEncerrada", ...a),
     };
@@ -419,6 +426,15 @@
           atualizar(d);
           avisar("Buquê de " + d.por + " pronto!", "ok");
           jogo.buqueMontado();
+        });
+
+        // buque.vendido (servidor -> todos, causa: temporizador de vendas).
+        // Por quê: a Loja vende sozinha no servidor; o placar sobe igual em todas as abas.
+        ouvir("buque.vendido", "atualiza o placar e mostra a venda na Loja", (d) => {
+          atualizar(d);
+          const plural = d.qtd > 1 ? "s" : "";
+          avisar(d.qtd + " buquê" + plural + " vendido" + plural + " na Loja! Total: " + d.estado.vendidos, "ok");
+          jogo.buqueVendido(d.qtd);
         });
 
         // ETAPA 6: ouvir "vila.encerrada"        -> jogo.vilaEncerrada()

@@ -59,7 +59,7 @@ da milestone que as conclui.
 ## Fase 7: História 6 — Vendas na Loja (P2)
 
 - [X] T018 [M8A] [US6] Temporizador de vendas emitindo `buque.vendido` em `server.py`
-- [ ] T019 [M8B] [US6] Escuta de `buque.vendido` e placar em `client/index.html`
+- [X] T019 [M8B] [US6] Escuta de `buque.vendido` e placar em `client/index.html`
 
 ## Fase 8: História 7 — Flores murcham (P2)
 

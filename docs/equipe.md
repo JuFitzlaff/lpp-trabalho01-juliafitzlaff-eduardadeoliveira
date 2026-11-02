@@ -81,9 +81,9 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M6A | Conclusão das obras por temporizador | Julia | M5A | concluída | `8411495` |
 | M6B | Construção pronta na vila | Eduarda | M6A, M5B | concluída | `4e9897e` |
 | M7A | Montagem de buquês no Ateliê | Julia | M6A | concluída | `981e3a7` |
-| M7B | Botão e reações da montagem | Eduarda | M7A, M6B | concluída | (registrado no próximo commit) |
+| M7B | Botão e reações da montagem | Eduarda | M7A, M6B | concluída | `b939a90` |
 | M8A | Vendas automáticas na Loja | Julia | M7A | concluída | (registrado no próximo commit) |
-| M8B | Reação às vendas e placar | Eduarda | M8A, M7B | pendente | — |
+| M8B | Reação às vendas e placar | Eduarda | M8A, M7B | concluída | (registrado no próximo commit) |
 | M9A | Validade dos lotes e murcha | Julia | M8A | pendente | — |
 | M9B | Reação às flores murchas | Eduarda | M9A, M8B | pendente | — |
 | M10A | Encerramento e revisão de concorrência | Julia | M9A | pendente | — |
