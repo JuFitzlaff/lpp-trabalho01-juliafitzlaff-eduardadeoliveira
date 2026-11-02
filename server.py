@@ -8,8 +8,6 @@ app = socketio.ASGIApp(sio, static_files={
     "/assets": "client/assets",      # mapa, tileset e sprites da vila
 })
 
-# A partir da Etapa 1, adicione o seu código ABAIXO desta linha.
-
 # ---------------------------------------------------------------------
 # Regras da Floricultura (docs/especificacao.md, seção 10)
 # ---------------------------------------------------------------------
@@ -198,7 +196,7 @@ async def construir(sid, dados=None):
     # escuta o PEDIDO de um Jogador para construir uma Estufa, um Ateliê ou uma Loja
     pedido = "construcao.solicitada"
     tipo = dados.get("tipo") if isinstance(dados, dict) else None
-    # Valide TUDO antes de alterar o estado e sem await no meio:
+    # Valida tudo antes de alterar o estado, sem await no meio:
     # assim, dois pedidos simultâneos são decididos um de cada vez.
     if estado["fase"] != "aberta":
         motivo = "A temporada não está aberta"
@@ -248,7 +246,7 @@ async def obra(tipo, nome):
 async def montar_buque(sid, dados=None):
     # escuta o PEDIDO de um Jogador para transformar flores em um buquê no Ateliê
     pedido = "buque.montagem_solicitada"
-    # Valide TUDO antes de alterar o estado e sem await no meio (mesma regra da construção).
+    # Valida tudo antes de alterar o estado, sem await no meio (mesma regra da construção).
     atelies = estado["construcoes"]["atelie"]["prontas"]
     if estado["fase"] != "aberta":
         motivo = "A temporada não está aberta"

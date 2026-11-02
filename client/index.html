@@ -155,10 +155,8 @@
 
 <script>
   // =====================================================================
-  //  A VILA DESENHADA (Phaser) - já vem pronta, você NÃO precisa alterar.
-  //  O cenário é um MAPA (Tilemap) feito no Tiled: client/assets/vila.json.
-  //  Cada método abaixo reage a UM evento do servidor.
-  //  Seu trabalho é chamar o método certo dentro de cada socket.on(...).
+  //  A VILA DESENHADA (Phaser): mapa do Tiled em client/assets/vila.json.
+  //  Cada método abaixo é a reação visual a UM evento do servidor.
   // =====================================================================
 
   // Nome e ícone de cada construção da Floricultura (usados na vila e no painel).
@@ -341,7 +339,7 @@
 
 <script>
   // =====================================================================
-  //  A APLICAÇÃO (Vue + Socket.IO) - é aqui que você trabalha.
+  //  A APLICAÇÃO (Vue + Socket.IO): pedidos, escutas e painel de eventos
   // =====================================================================
   const { createApp, ref, reactive, computed, nextTick } = Vue;
 
@@ -380,7 +378,7 @@
         Object.assign(estado, d.estado);   // copia o estado enviado pelo servidor
       }
 
-      // ----- painel de eventos (já pronto) -----
+      // ----- painel de eventos -----
       function resumir(d) {                // transforma os dados do evento em texto curto
         if (!d) return "";
         const { estado: e, causa, ...resto } = d;
@@ -415,7 +413,6 @@
         });
 
         // ===== ESCUTAS (on): o cliente reage aos FATOS do servidor =====
-        // ouvir(evento, "o que o cliente faz ao receber", função)
 
         // estado.sincronizado (servidor -> só este cliente, ao entrar).
         // Por quê: a tela não inventa números; começa exatamente igual ao retrato do servidor.
@@ -508,7 +505,6 @@
       }
 
       // ===== PEDIDOS (emit): o cliente PEDE algo ao servidor =====
-      // pedir(evento)
       function abrirVila() {
         // PEDIDO do Mestre: a tela não muda a fase sozinha, espera o fato vila.iniciada
         pedir("vila.abertura_solicitada");
