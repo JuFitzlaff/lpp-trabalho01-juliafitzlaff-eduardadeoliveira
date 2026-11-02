@@ -24,7 +24,7 @@
     .tela { position: relative; margin: 12px 0; }
     #jogo { border-radius: 8px; overflow: hidden; line-height: 0; }
     #jogo canvas { width: 100% !important; height: auto !important; image-rendering: pixelated; }
-    /* placar (HUD) e legenda ficam por cima da vila, como camadas da tela do jogo */
+    /* placar (HUD) fica por cima da vila, como uma camada da tela do jogo */
     .hud { position: absolute; left: 6px; right: 6px; bottom: 6px; margin: 0; padding: 4px 8px; border: none;
            display: flex; flex-wrap: wrap; gap: 0 12px; background: rgba(60, 10, 35, 0.8); color: #fff;
            font-size: 12px; line-height: 1.45; pointer-events: none; }
@@ -32,10 +32,11 @@
     .hud progress { width: 48px; height: 8px; vertical-align: middle; }
     .hud .tipo { margin-right: 8px; }
     .hud em { font-style: normal; color: #ffd54a; }
-    .legenda-jogo { position: absolute; top: 6px; right: 6px; max-width: 140px; padding: 2px 6px; border-radius: 6px;
-                    background: rgba(255, 255, 255, 0.9); font-size: 10px; line-height: 1.35; }
-    .legenda-jogo button { margin: 0; padding: 0 2px; border: none; background: none; font-size: 10px; }
-    .legenda-jogo ul { list-style: none; margin: 1px 0 2px; padding: 0; }
+    /* legenda fica embaixo da tela do jogo, num quadro próprio */
+    .legenda-jogo { padding: 8px 12px; font-size: 13px; }
+    .legenda-jogo button { margin: 0; padding: 0; border: none; background: none; font-size: 13px; font-weight: bold; color: #ad1457; }
+    .legenda-jogo ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid;
+                       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px 12px; }
     .eventos { border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin: 12px 0; background: #fafafa; }
     .eventos h2 { margin: 0 0 6px; font-size: 16px; }
     .eventos .legenda { font-size: 12px; margin: 4px 0 8px; }
@@ -74,7 +75,7 @@
     <h1>🌷 Floricultura</h1>
     <p>{{ papel }}: <strong>{{ nome || "Anônimo" }}</strong> · Temporada: <strong>{{ estado.fase }}</strong></p>
 
-    <!-- Tela do jogo: a vila desenhada (Phaser) com o placar e a legenda por cima -->
+    <!-- Tela do jogo: a vila desenhada (Phaser) com o placar por cima -->
     <div class="tela">
       <div id="jogo"></div>
 
@@ -87,20 +88,20 @@
           <progress :value="estado.floristas" :max="estado.limite"></progress></p>
         <p><span v-for="(c, tipo) in estado.construcoes" class="tipo" :title="TIPOS[tipo].nome">{{ TIPOS[tipo].icone }} {{ c.prontas }}<em v-if="c.em_obra"> +{{ c.em_obra }}🚧</em></span></p>
       </section>
-
-      <!-- Legenda: o que é cada coisa (só visual; pode ser recolhida) -->
-      <section class="legenda-jogo">
-        <button @click="mostrarLegenda = !mostrarLegenda">❔ {{ mostrarLegenda ? "Legenda" : "" }}</button>
-        <ul v-if="mostrarLegenda">
-          <li>🌱 <b>Estufa</b>: colhe 🌷 a cada {{ estado.intervalo }} s</li>
-          <li>✂️ <b>Ateliê</b>: {{ estado.flores_por_buque }} 🌷 → 1 💐</li>
-          <li>🏪 <b>Loja</b>: vende 1 💐 a cada {{ estado.intervalo_vendas }} s</li>
-          <li>💐 <b>Buquê</b>: feito no Ateliê</li>
-          <li>🥀 🌷 murcham em {{ estado.validade }} s</li>
-          <li>🚧 obra (ocupa 1 florista)</li>
-        </ul>
-      </section>
     </div>
+
+    <!-- Legenda: o que é cada coisa (só visual; pode ser recolhida) -->
+    <section class="painel legenda-jogo">
+      <button @click="mostrarLegenda = !mostrarLegenda">❔ Legenda {{ mostrarLegenda ? "▾" : "▸" }}</button>
+      <ul v-if="mostrarLegenda">
+        <li>🌱 <b>Estufa</b>: colhe 🌷 a cada {{ estado.intervalo }} s</li>
+        <li>✂️ <b>Ateliê</b>: {{ estado.flores_por_buque }} 🌷 → 1 💐</li>
+        <li>🏪 <b>Loja</b>: vende 1 💐 a cada {{ estado.intervalo_vendas }} s</li>
+        <li>💐 <b>Buquê</b>: feito no Ateliê</li>
+        <li>🥀 🌷 murcham em {{ estado.validade }} s</li>
+        <li>🚧 obra (ocupa 1 florista)</li>
+      </ul>
+    </section>
 
     <section>
       <template v-if="papel === 'mestre'">

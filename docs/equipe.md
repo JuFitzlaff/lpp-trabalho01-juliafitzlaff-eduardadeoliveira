@@ -91,7 +91,8 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 | M11 | Identidade visual, contadores e painel completo | Eduarda | M10B | concluída | `92aa5c8` |
 | M12A | README: instalação, eventos e respostas | Julia | M11 | concluída | `0197204` |
 | M12B | README: testes, IA e créditos + teste final com 3 abas | Eduarda | M12A | concluída | `464554a` |
-| M13 | Extra: placar e legenda dentro da tela do jogo | Eduarda | M12B | concluída | último commit do histórico |
+| M13 | Extra: placar e legenda dentro da tela do jogo | Eduarda | M12B | concluída | `a89e085` |
+| M14 | Ajuste: legenda abaixo da tela do jogo e imagem no README | Julia | M13 | concluída | último commit do histórico |
 
 ## 5. Detalhamento
 
@@ -259,6 +260,15 @@ Abrindo duas abas com esse roteiro dá para verificar quem recebe cada evento (t
 - **Conclusão:** placar e legenda dentro da área da vila sem cobrir nenhum dos 6 lotes; placar atualizado
   a cada fato recebido; todos os testes anteriores continuam passando.
 - **Commit:** `feat: adiciona placar e legenda na tela do jogo`
+
+### M14 — Ajuste: legenda abaixo da tela do jogo e imagem no README · Julia
+- **Por quê:** a legenda por cima da vila disputava espaço com as construções; volta para baixo da tela,
+  e o README ganha uma imagem da tela do jogo.
+- **Escopo:** legenda recolhível num quadro logo abaixo da tela do jogo (o placar continua por cima da
+  vila); `docs/imagens/tela-do-jogo.png` exibida no início do README. Servidor e contrato de eventos não mudam.
+- **Conclusão:** legenda fora da área da vila com os números do servidor; placar sem cobrir nenhum lote;
+  todos os testes anteriores continuam passando.
+- **Commit:** `feat: move legenda para baixo da tela do jogo`
 
 ## 6. Roteiro do teste final (três abas)
 

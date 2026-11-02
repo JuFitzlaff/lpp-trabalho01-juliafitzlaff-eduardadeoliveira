@@ -80,6 +80,7 @@ da milestone que as conclui.
 ## Fase 11: Extras (depois do escopo obrigatório)
 
 - [X] T027 [M13] Placar (barra de status) e legenda dentro da tela do jogo em `client/index.html`
+- [X] T028 [M14] Legenda abaixo da tela do jogo em `client/index.html` e imagem da tela no `README.md`
 
 ---
 

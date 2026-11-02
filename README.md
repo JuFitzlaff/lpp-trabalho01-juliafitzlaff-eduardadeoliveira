@@ -6,6 +6,8 @@ flores sozinhas, os **floristas** constroem e, no **Ateliê**, transformam flore
 **Loja** vende automaticamente. As flores **murcham** se não forem usadas a tempo. O **Mestre** abre e
 encerra a temporada. O servidor decide tudo e avisa todos os jogadores por eventos, sem recarregar a página.
 
+![Tela do jogo: temporada aberta, com Estufas, Ateliê e Loja prontos, uma Estufa em obra e o placar na barra de baixo](docs/imagens/tela-do-jogo.png)
+
 ## Integrantes
 
 - Julia Fitzlaff — [@JuFitzlaff](https://github.com/JuFitzlaff) — servidor
@@ -184,9 +186,9 @@ na tela.
 
 Feitos depois de todo o escopo obrigatório estar pronto e testado:
 
-- **Placar e legenda dentro da tela do jogo:** os números da floricultura (flores, buquês, vendidos,
-  floristas e construções) aparecem numa barra de status sobre a vila, e uma legenda recolhível (❔) no
-  canto da tela explica o que são a Estufa, o Ateliê, a Loja, o Buquê, a murcha e as obras, usando os
+- **Placar dentro da tela do jogo e legenda:** os números da floricultura (flores, buquês, vendidos,
+  floristas e construções) aparecem numa barra de status sobre a vila, e uma legenda recolhível (❔)
+  logo abaixo da tela do jogo explica o que são a Estufa, o Ateliê, a Loja, o Buquê, a murcha e as obras, usando os
   números enviados pelo servidor. O placar só reflete o retrato do último fato recebido; nada é calculado
   no cliente.
 
