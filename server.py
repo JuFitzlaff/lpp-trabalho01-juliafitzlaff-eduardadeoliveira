@@ -113,6 +113,23 @@ async def abrir_vila(sid, dados=None):
     await sio.emit("vila.iniciada", fato(pedido))
 
 
+@sio.on("vila.encerramento_solicitado")
+async def encerrar_vila(sid, dados=None):
+    # escuta o PEDIDO do Mestre para encerrar a temporada
+    pedido = "vila.encerramento_solicitado"
+    if papel_de(sid) != "mestre":
+        await recusar(sid, "Só o Mestre pode encerrar a temporada", pedido)
+        return
+    if estado["fase"] != "aberta":
+        await recusar(sid, "A temporada não está aberta", pedido)
+        return
+    # Todos os temporizadores conferem a fase antes de mexer no estado: a partir daqui
+    # colheita, vendas e murcha param, e obras e montagens em andamento não terminam.
+    estado["fase"] = "encerrada"
+    # servidor -> TODOS: a temporada acaba para todos, com o placar final no retrato
+    await sio.emit("vila.encerrada", fato(pedido))
+
+
 def novo_lote(qtd):
     """Guarda uma colheita como lote novo e soma as flores ao estoque."""
     global proximo_lote

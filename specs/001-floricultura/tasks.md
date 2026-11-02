@@ -68,7 +68,7 @@ da milestone que as conclui.
 
 ## Fase 9: História 8 — Encerramento (P1)
 
-- [ ] T022 [M10A] [US8] Tratador de `vila.encerramento_solicitado`, `vila.encerrada` e revisão de concorrência em `server.py`
+- [X] T022 [M10A] [US8] Tratador de `vila.encerramento_solicitado`, `vila.encerrada` e revisão de concorrência em `server.py`
 - [ ] T023 [M10B] [US8] Pedido de encerramento e escuta de `vila.encerrada` em `client/index.html`
 
 ## Fase 10: História 9 e acabamento
