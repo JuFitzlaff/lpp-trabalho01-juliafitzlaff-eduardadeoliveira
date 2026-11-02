@@ -107,6 +107,8 @@ async def abrir_vila(sid, dados=None):
     estado["fase"] = "aberta"
     sio.start_background_task(colheita)     # a abertura liga o temporizador da colheita
     sio.start_background_task(vendas)       # e o temporizador de vendas da Loja
+    for lote in lotes:                      # o prazo do lote inicial começa na abertura
+        sio.start_background_task(validade, lote["id"])
     # servidor -> TODOS: o fato muda a fase para todos os jogadores ao mesmo tempo
     await sio.emit("vila.iniciada", fato(pedido))
 
@@ -128,9 +130,24 @@ async def colheita():
         if estado["fase"] != "aberta":
             break
         qtd = estado["producao"]                # 10 flores por Estufa pronta
-        novo_lote(qtd)
+        lote = novo_lote(qtd)
+        sio.start_background_task(validade, lote["id"])     # cada colheita tem o seu prazo
         # servidor -> TODOS, sem ninguém pedir: a causa do fato é o temporizador
         await sio.emit("recurso.produzido", fato("temporizador da colheita", qtd=qtd))
+
+
+async def validade(lote_id):
+    """Temporizador de validade: VALIDADE_LOTE segundos depois da colheita, o que sobrou do lote murcha."""
+    await sio.sleep(VALIDADE_LOTE)
+    if estado["fase"] != "aberta":
+        return                                  # temporada encerrada: nada mais murcha
+    lote = next((l for l in lotes if l["id"] == lote_id), None)
+    if lote is None:
+        return                                  # lote já usado por inteiro: some sem aviso
+    lotes.remove(lote)
+    estado["flores"] -= lote["qtd"]
+    # servidor -> TODOS, sem ninguém pedir: a causa do fato é o prazo do lote
+    await sio.emit("flores.murchadas", fato("temporizador de validade", qtd=lote["qtd"], lote=lote_id))
 
 
 async def vendas():
