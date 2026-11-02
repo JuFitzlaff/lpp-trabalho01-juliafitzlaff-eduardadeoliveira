@@ -192,3 +192,48 @@ async def obra(tipo, nome):
         estado["producao"] += FLORES_POR_ESTUFA     # cada Estufa nova colhe +10 por colheita
     # servidor -> TODOS, sem ninguém pedir: a causa é o temporizador ligado pela obra
     await sio.emit("construcao.concluida", fato("temporizador da obra", tipo=tipo, por=nome))
+
+
+@sio.on("buque.montagem_solicitada")
+async def montar_buque(sid, dados=None):
+    # escuta o PEDIDO de um Jogador para transformar flores em um buquê no Ateliê
+    pedido = "buque.montagem_solicitada"
+    # Valide TUDO antes de alterar o estado e sem await no meio (mesma regra da construção).
+    atelies = estado["construcoes"]["atelie"]["prontas"]
+    if estado["fase"] != "aberta":
+        motivo = "A temporada não está aberta"
+    elif papel_de(sid) != "jogador":
+        motivo = "Só jogadores podem montar buquês"
+    elif atelies == 0:
+        motivo = "Nenhum ateliê pronto"
+    elif estado["montagens"] >= atelies:
+        motivo = "Todos os ateliês estão ocupados"
+    elif estado["flores"] < FLORES_POR_BUQUE:
+        motivo = "Flores insuficientes"
+    elif estado["floristas"] >= estado["limite"]:
+        motivo = "Nenhum florista livre"
+    else:
+        motivo = None
+    if motivo:
+        await recusar(sid, motivo, pedido)      # só quem pediu recebe; nada muda
+        return
+
+    gastar_flores(FLORES_POR_BUQUE)             # as flores mais antigas viram buquê primeiro
+    estado["floristas"] += 1
+    estado["montagens"] += 1                    # ocupa um Ateliê
+    nome = jogadores[sid]["nome"]
+    # servidor -> TODOS: todos veem as flores saírem e o Ateliê ocupado
+    await sio.emit("buque.montagem_iniciada", fato(pedido, por=nome))
+    sio.start_background_task(montagem, nome)   # o fato liga o temporizador desta montagem
+
+
+async def montagem(nome):
+    """Temporizador da montagem: o buquê fica pronto TEMPO_MONTAGEM segundos depois."""
+    await sio.sleep(TEMPO_MONTAGEM)
+    if estado["fase"] != "aberta":
+        return                                  # temporada encerrada: a montagem fica congelada
+    estado["buques"] += 1
+    estado["floristas"] -= 1                    # florista e Ateliê voltam a ficar livres
+    estado["montagens"] -= 1
+    # servidor -> TODOS, sem ninguém pedir: a causa é o temporizador ligado pela montagem
+    await sio.emit("buque.montado", fato("temporizador da montagem", por=nome))
