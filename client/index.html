@@ -59,7 +59,8 @@
 
     <section class="painel">
       <p>🌷 Flores: <strong>{{ estado.flores }}</strong> (+{{ porMinuto }}/min · murcham {{ estado.validade }} s após a colheita)</p>
-      <p>💐 Buquês: <strong>{{ estado.buques }}</strong> · 🧾 Vendidos: <strong>{{ estado.vendidos }}</strong></p>
+      <p>💐 Buquês: <strong>{{ estado.buques }}</strong> ({{ estado.montagens }} em montagem)
+        · 🧾 Vendidos: <strong>{{ estado.vendidos }}</strong></p>
       <p>🧑‍🌾 Floristas: {{ estado.floristas }}/{{ estado.limite }}
         <progress :value="estado.floristas" :max="estado.limite"></progress></p>
       <p v-for="(c, tipo) in estado.construcoes">{{ TIPOS[tipo].icone }} {{ TIPOS[tipo].nome }}:
@@ -74,6 +75,7 @@
       <template v-else>
         <button v-for="(t, tipo) in TIPOS" @click="construir(tipo)">
           {{ t.icone }} {{ t.nome }} ({{ textoCusto(tipo) }})</button>
+        <button @click="montarBuque">💐 Montar buquê ({{ estado.flores_por_buque }} 🌷)</button>
       </template>
     </section>
 
@@ -161,6 +163,7 @@
 
         this.obras = [];      // obras em andamento (a primeira a começar é a primeira a terminar)
         this.estufas = [];    // posições das Estufas prontas
+        this.atelies = [];    // posições dos Ateliês prontos
         this.usados = 0;      // quantos lotes já foram usados
         this.faixa = this.add.text(this.larg / 2, 9, "⏳ Aguardando o Mestre", {
           fontSize: "8px", color: "#ffffff", backgroundColor: "#00000099",
@@ -181,6 +184,7 @@
             .setOrigin(0.5).setDepth(6);
         }
         if (tipo === "estufa") this.estufas.push({ x, y });   // de onde sobem as flores colhidas
+        if (tipo === "atelie") this.atelies.push({ x, y });   // onde os buquês são montados
       }
       criarObra(duracao, tipo) {
         const { x, y } = this.lote(this.usados++);
@@ -239,6 +243,14 @@
         const origem = this.estufas[0] || this.acampamento;
         this.flutuar("+" + qtd + " 🌷", origem.x + 18, origem.y, "#1b5e20");
       }
+      montagemIniciada(qtd) {                 // buque.montagem_iniciada
+        const a = this.atelies[0] || this.acampamento;
+        this.flutuar("-" + qtd + " 🌷 ✂️", a.x + 18, a.y, "#b00020");
+      }
+      buqueMontado() {                        // buque.montado
+        const a = this.atelies[0] || this.acampamento;
+        this.flutuar("+1 💐", a.x + 18, a.y, "#1b5e20");
+      }
       recusado(motivo) {                      // operacao.recusada (só quem pediu)
         this.cameras.main.shake(180, 0.006);
         this.flutuar("✋ " + motivo, this.larg / 2, this.alt - 28, "#b00020");
@@ -262,6 +274,8 @@
       obraIniciada: (...a) => chamar("obraIniciada", ...a),
       obraConcluida: (...a) => chamar("obraConcluida", ...a),
       recursoProduzido: (...a) => chamar("recursoProduzido", ...a),
+      montagemIniciada: (...a) => chamar("montagemIniciada", ...a),
+      buqueMontado: (...a) => chamar("buqueMontado", ...a),
       recusado: (...a) => chamar("recusado", ...a),
       vilaEncerrada: (...a) => chamar("vilaEncerrada", ...a),
     };
@@ -391,6 +405,22 @@
           jogo.obraConcluida(d.tipo);
         });
 
+        // buque.montagem_iniciada (servidor -> todos, causa: buque.montagem_solicitada aceito).
+        // Por quê: as flores saem e o Ateliê fica ocupado para todos ao mesmo tempo.
+        ouvir("buque.montagem_iniciada", "mostra as flores indo para o Ateliê", (d) => {
+          atualizar(d);
+          avisar(d.por + " começou um buquê no Ateliê");
+          jogo.montagemIniciada(d.estado.flores_por_buque);
+        });
+
+        // buque.montado (servidor -> todos, causa: temporizador da montagem).
+        // Por quê: o buquê fica pronto sozinho no servidor; a tela só mostra o resultado.
+        ouvir("buque.montado", "soma o buquê pronto e mostra o +1", (d) => {
+          atualizar(d);
+          avisar("Buquê de " + d.por + " pronto!", "ok");
+          jogo.buqueMontado();
+        });
+
         // ETAPA 6: ouvir "vila.encerrada"        -> jogo.vilaEncerrada()
       }
 
@@ -409,12 +439,16 @@
         // PEDIDO do Jogador: só diz o tipo; o servidor decide se aceita e quanto custa
         pedir("construcao.solicitada", { tipo });
       }
+      function montarBuque() {
+        // PEDIDO do Jogador: o servidor confere Ateliê, flores e floristas antes de aceitar
+        pedir("buque.montagem_solicitada");
+      }
       function encerrarVila() {
         // ETAPA 6: pedir "vila.encerramento_solicitado"
       }
 
       return { TIPOS, nome, papel, conectado, estado, avisos, eventosVisiveis, contadores, ocultarProducao, porMinuto,
-               entrar, abrirVila, construir, textoCusto, encerrarVila };
+               entrar, abrirVila, construir, textoCusto, montarBuque, encerrarVila };
     }
   }).mount("#app");
 </script>

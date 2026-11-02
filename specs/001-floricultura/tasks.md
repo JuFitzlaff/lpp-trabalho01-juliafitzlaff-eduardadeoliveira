@@ -54,7 +54,7 @@ da milestone que as conclui.
 ## Fase 6: História 5 — Montagem de buquês (P2)
 
 - [X] T016 [M7A] [US5] Tratador de `buque.montagem_solicitada`, `buque.montagem_iniciada` e temporizador de `buque.montado` em `server.py`
-- [ ] T017 [M7B] [US5] Botão "Montar buquê" e escutas da montagem em `client/index.html`
+- [X] T017 [M7B] [US5] Botão "Montar buquê" e escutas da montagem em `client/index.html`
 
 ## Fase 7: História 6 — Vendas na Loja (P2)
 
